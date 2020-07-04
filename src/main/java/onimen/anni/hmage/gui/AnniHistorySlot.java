@@ -6,7 +6,6 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraftforge.fml.client.GuiScrollingList;
 import onimen.anni.hmage.anni.AnniObserver;
 import onimen.anni.hmage.anni.AnniObserverMap;
 import onimen.anni.hmage.anni.data.GameInfo;

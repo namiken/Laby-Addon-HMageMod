@@ -21,7 +21,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
-import net.minecraftforge.fml.client.GuiScrollingList;
 import onimen.anni.hmage.anni.AnniObserverMap;
 import onimen.anni.hmage.anni.GamePhase;
 import onimen.anni.hmage.anni.data.AnniPlayerData;

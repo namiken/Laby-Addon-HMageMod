@@ -2,6 +2,8 @@ package onimen.anni.hmage;
 
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import net.labymod.api.LabyModAddon;
 import net.labymod.api.events.MessageReceiveEvent;
 import net.labymod.settings.elements.SettingsElement;
@@ -41,6 +43,10 @@ public class LabyHmageMod extends LabyModAddon {
         return false;
       }
     });
+
+    //キーの設定を行う
+    Minecraft.getMinecraft().gameSettings.keyBindings = ArrayUtils
+        .add(Minecraft.getMinecraft().gameSettings.keyBindings, ForgeEventListener.openSettingsKey);
 
     //Forge Event Listenerの登録
     getApi().registerForgeListener(new ForgeEventListener());

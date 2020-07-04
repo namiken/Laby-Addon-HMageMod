@@ -12,8 +12,8 @@ import onimen.anni.hmage.gui.AnniHistoryList;
 
 public class ForgeEventListener {
 
-  public static KeyBinding openSettingsKey = new KeyBinding("hmage.key.settings", Keyboard.KEY_P,
-      "key.categories.hmage");
+  public static KeyBinding openSettingsKey = new KeyBinding("Open Anni History", Keyboard.KEY_P,
+      "key.categories.gameplay");
 
   @SubscribeEvent
   public void onKeyInput(InputEvent.KeyInputEvent event) {
