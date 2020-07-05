@@ -7,7 +7,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import onimen.anni.hmage.anni.AnniObserver;
-import onimen.anni.hmage.anni.AnniObserverMap;
+import onimen.anni.hmage.anni.AnniObserverManager;
 import onimen.anni.hmage.anni.data.GameInfo;
 import onimen.anni.hmage.util.DateUtils;
 
@@ -83,7 +83,7 @@ public class AnniHistorySlot extends GuiScrollingList {
     font.drawString(
         font.trimStringToWidth(gameInfo.getMeTeamColor().getColoredName(), listWidth),
         this.left + 3, top + 11, 0xFFFFFF);
-    AnniObserver anniObserver = AnniObserverMap.getInstance().getAnniObserver();
+    AnniObserver anniObserver = AnniObserverManager.getInstance().getAnniObserver();
     if (anniObserver == null || !anniObserver.getGameInfo().equals(gameInfo)) {
       font.drawString(font.trimStringToWidth(DateUtils.getDateString(gameInfo.getGameTimestamp()), listWidth),
           this.left + 3, top + 20, 0xFFFFFF);

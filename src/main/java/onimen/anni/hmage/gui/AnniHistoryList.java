@@ -21,7 +21,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
-import onimen.anni.hmage.anni.AnniObserverMap;
+import onimen.anni.hmage.anni.AnniObserverManager;
 import onimen.anni.hmage.anni.GamePhase;
 import onimen.anni.hmage.anni.data.AnniPlayerData;
 import onimen.anni.hmage.anni.data.GameInfo;
@@ -41,7 +41,7 @@ public class AnniHistoryList extends GuiScreen {
    * @param mainMenu
    */
   public AnniHistoryList() {
-    gameInfos = AnniObserverMap.getInstance().getGameInfoList();
+    gameInfos = AnniObserverManager.getInstance().getGameInfoList();
     gameInfos.sort((g1, g2) -> (int) (g2.getGameTimestamp() - g1.getGameTimestamp()));
 
     //一番新しいものを選択する

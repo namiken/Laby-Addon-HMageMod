@@ -7,7 +7,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
-import onimen.anni.hmage.anni.AnniObserverMap;
+import onimen.anni.hmage.anni.AnniObserverManager;
 import onimen.anni.hmage.gui.AnniHistoryList;
 
 public class ForgeEventListener {
@@ -35,9 +35,7 @@ public class ForgeEventListener {
       }
     }
 
-    AnniObserverMap anniObserverMap = AnniObserverMap.getInstance();
-    if (anniObserverMap.getAnniObserver() != null) {
-      anniObserverMap.getAnniObserver().onClientTick(event);
-    }
+    AnniObserverManager anniObserverMap = AnniObserverManager.getInstance();
+    anniObserverMap.onClientTick(event);
   }
 }

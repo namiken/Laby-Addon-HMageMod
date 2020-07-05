@@ -75,8 +75,10 @@ public class AnniChatReciveExecutor {
             continue;
           }
 
-          AnniObserver anniObserver = AnniObserverMap.getInstance().getAnniObserver();
-          if (anniObserver == null) { return; }
+          AnniObserver anniObserver = AnniObserverManager.getInstance().getAnniObserver();
+          if (anniObserver == null) {
+            continue;
+          }
 
           //キルログパターン
           Matcher matcher = killChatPattern.matcher(message);
@@ -86,7 +88,7 @@ public class AnniChatReciveExecutor {
             AnniTeamColor deadTeam = AnniTeamColor.findByColorCode(matcher.group(6));
             AnniKillType killType = matcher.group(5).equalsIgnoreCase("shot") ? AnniKillType.SHOT : AnniKillType.MELEE;
             anniObserver.getGameInfo().addKillCount(matcher.group(2), killerTeam, matcher.group(7), deadTeam, killType);
-            return;
+            continue;
           }
 
           //ネクダメログのパターン
@@ -105,7 +107,7 @@ public class AnniChatReciveExecutor {
             AnniTeamColor damageColor = AnniTeamColor.findByColorCode(matcher2.group("damageColor"));
             anniObserver.getGameInfo().addNexusDamageCount(matcher2.group("attacker"),
                 attackerColor, damageColor);
-            return;
+            continue;
           }
 
           //職業変更のパターン
@@ -116,7 +118,7 @@ public class AnniChatReciveExecutor {
             if (classType != null) {
               anniObserver.getGameInfo().setClassType(classType);
             }
-            return;
+            continue;
           }
 
         } catch (Throwable e) {

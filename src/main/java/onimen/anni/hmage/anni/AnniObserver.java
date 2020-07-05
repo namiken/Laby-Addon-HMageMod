@@ -2,50 +2,26 @@ package onimen.anni.hmage.anni;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
 import com.google.common.io.Files;
 import com.google.gson.Gson;
-import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.BossInfoClient;
-import net.minecraft.client.gui.GuiBossOverlay;
-import net.minecraft.scoreboard.ScoreObjective;
-import net.minecraft.scoreboard.ScorePlayerTeam;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.world.BossInfo.Color;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.anni.data.AnniTeamColor;
 import onimen.anni.hmage.anni.data.GameInfo;
 
 public class AnniObserver {
 
-  private static final String MAP_PREFIX = ChatFormatting.GOLD.toString() + ChatFormatting.BOLD.toString() + "Map: ";
-
-  private static final String VOTING_TEXT = ChatFormatting.GREEN + "/vote [map name] to vote";
-
-  private Minecraft mc;
-  private Map<UUID, BossInfoClient> bossInfoMap = null;
-
-  private int tickLeftWhileNoAnniScoreboard = 0;
-
   @Nonnull
   private final GameInfo gameInfo;
 
-  public AnniObserver(Minecraft mcIn) {
-    this.mc = mcIn;
+  public AnniObserver(Minecraft mcIn, String map) {
     this.gameInfo = new GameInfo();
+    this.gameInfo.setMapName(map);
   }
 
   public GameInfo getGameInfo() {
@@ -53,15 +29,13 @@ public class AnniObserver {
   }
 
   public void onJoinGame() {
-    this.tickLeftWhileNoAnniScoreboard = 0;
   }
 
   public void onLeaveGame() {
-    this.tickLeftWhileNoAnniScoreboard = 0;
 
     if (gameInfo.getGamePhase().getValue() > 0 && gameInfo.getMeTeamColor() != AnniTeamColor.NO_JOIN) {
       //gameInfoを保存
-      File historyDataDir = AnniObserverMap.getHistoryDataDir();
+      File historyDataDir = AnniObserverManager.getHistoryDataDir();
       Gson gson = new Gson();
       String json = gson.toJson(gameInfo);
       try {
@@ -77,137 +51,4 @@ public class AnniObserver {
 
     }
   }
-
-  @SideOnly(Side.CLIENT)
-  public void onClientTick(ClientTickEvent event) {
-    if (event.phase != Phase.END) { return; }
-
-    //ゲーム中でないならリセット
-    if (mc.ingameGUI == null) {
-      AnniObserverMap.getInstance().unsetAnniObserver();
-      return;
-    }
-    if (mc.world == null) {
-      tickLeftWhileNoAnniScoreboard++;
-      if (tickLeftWhileNoAnniScoreboard > 100) {
-        AnniObserverMap.getInstance().unsetAnniObserver();
-      }
-      return;
-    }
-
-    //ボスゲージ取得
-    if (this.bossInfoMap == null) {
-      this.bossInfoMap = getBossInfoMap(mc.ingameGUI.getBossOverlay());
-    }
-
-    Scoreboard scoreboard = mc.world.getScoreboard();
-    //Anniをプレイ中かどうか確認
-    if (scoreboard != null && isAnniScoreboard(scoreboard)) {
-      tickLeftWhileNoAnniScoreboard = 0;
-
-      AnniTeamColor previousTeamColor = gameInfo.getMeTeamColor();
-      AnniTeamColor nextTeamColor = AnniTeamColor.NO_JOIN;
-
-      ScorePlayerTeam team = scoreboard.getPlayersTeam(gameInfo.getMePlayerData().getPlayerName());
-
-      if (team != null) {
-        nextTeamColor = AnniTeamColor.findByTeamName(team.getDisplayName().replaceFirst("§.", ""));
-      }
-
-      if (previousTeamColor != nextTeamColor) {
-        gameInfo.getMePlayerData().setTeamColor(nextTeamColor);
-      }
-
-    } else {
-      tickLeftWhileNoAnniScoreboard++;
-      if (tickLeftWhileNoAnniScoreboard > 100) {
-        AnniObserverMap.getInstance().unsetAnniObserver();
-        return;
-      }
-    }
-
-    GamePhase previousPhase = this.gameInfo.getGamePhase(), nextPhase = GamePhase.UNKNOWN;
-    //フェーズを取得
-    if (bossInfoMap != null) {
-      for (BossInfoClient bossInfo : bossInfoMap.values()) {
-        //フェーズを表示するボスバーは青色なので
-        if (bossInfo.getColor() == Color.BLUE) {
-          String name = bossInfo.getName().getUnformattedText();
-          nextPhase = GamePhase.getGamePhasebyText(name);
-          break;
-        }
-      }
-    }
-    if (previousPhase == null || previousPhase.getValue() != nextPhase.getValue()) {
-      this.gameInfo.setGamePhase(nextPhase);
-    }
-
-    //Mapを取得
-    if (gameInfo.getMapName() == null && scoreboard != null) {
-      String previousMapName = gameInfo.getMapName();
-      String nextMapName = getMapFromScoreboard(scoreboard);
-      if (previousMapName == null || !previousMapName.equals(nextMapName)) {
-        gameInfo.setMapName(nextMapName);
-      }
-    }
-  }
-
-  private boolean isAnniScoreboard(Scoreboard scoreboard) {
-    ScoreObjective scoreobjective = scoreboard.getObjectiveInDisplaySlot(1);
-
-    if (scoreobjective == null) { return false; }
-    String displayName = scoreobjective.getDisplayName();
-
-    //Voteの場合
-    if (displayName.contentEquals(VOTING_TEXT)) { return true; }
-
-    //試合中の場合
-    if (displayName.contains(MAP_PREFIX)) { return true; }
-
-    return false;
-  }
-
-  private String getMapFromScoreboard(Scoreboard scoreboard) {
-    ScoreObjective scoreobjective = scoreboard.getObjectiveInDisplaySlot(1);
-
-    if (scoreobjective == null) { return null; }
-    String displayName = scoreobjective.getDisplayName();
-
-    if (displayName.equals(VOTING_TEXT)) {
-      gameInfo.setGamePhase(GamePhase.STARTING);
-      return null;
-    }
-
-    if (!displayName.contains(MAP_PREFIX)) { return null; }
-
-    return displayName.replace(MAP_PREFIX, "");
-  }
-
-  @SuppressWarnings("unchecked")
-  private Map<UUID, BossInfoClient> getBossInfoMap(GuiBossOverlay bossOverlay) {
-    if (bossOverlay != null) {
-
-      Field[] declaredFields = bossOverlay.getClass().getDeclaredFields();
-
-      for (Field field : declaredFields) {
-
-        int modifiers = field.getModifiers();
-
-        if (!Modifier.isPrivate(modifiers) || !Modifier.isFinal(modifiers))
-          continue;
-
-        if (!Map.class.isAssignableFrom(field.getType()))
-          continue;
-
-        try {
-          field.setAccessible(true);
-          return (Map<UUID, BossInfoClient>) field.get(bossOverlay);
-        } catch (IllegalArgumentException | IllegalAccessException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-    return null;
-  }
-
 }

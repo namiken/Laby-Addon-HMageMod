@@ -26,6 +26,10 @@ public enum GamePhase {
     return this.phase;
   }
 
+  public boolean hasCountdonw() {
+    return this == PHASE_1 || this == PHASE_2 || this == PHASE_3 || this == PHASE_4;
+  }
+
   public static GamePhase getGamePhasebyText(String text) {
     if (text.startsWith("Starts in ")) {
       return STARTING;
