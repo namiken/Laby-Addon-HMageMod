@@ -49,6 +49,8 @@ public class LabyHmageMod extends LabyModAddon {
     //キーの設定を行う
     Minecraft.getMinecraft().gameSettings.keyBindings = ArrayUtils
         .add(Minecraft.getMinecraft().gameSettings.keyBindings, ForgeEventListener.openSettingsKey);
+    Minecraft.getMinecraft().gameSettings.keyBindings = ArrayUtils
+        .add(Minecraft.getMinecraft().gameSettings.keyBindings, ForgeEventListener.showAnniRankingTab);
 
     //Forge Event Listenerの登録
     getApi().registerForgeListener(new ForgeEventListener());
