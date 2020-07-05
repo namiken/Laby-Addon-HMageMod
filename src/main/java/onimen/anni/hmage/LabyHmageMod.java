@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.Mod;
 import onimen.anni.hmage.anni.AnniChatReciveExecutor;
 import onimen.anni.hmage.listener.ForgeEventListener;
+import onimen.anni.hmage.module.AcroJumpModule;
 import onimen.anni.hmage.util.HMageLogger;
 import onimen.anni.hmage.util.ShotbowUtils;
 
@@ -50,6 +51,9 @@ public class LabyHmageMod extends LabyModAddon {
 
     //Forge Event Listenerの登録
     getApi().registerForgeListener(new ForgeEventListener());
+
+    //モジュールの追加
+    getApi().registerModule(new AcroJumpModule());
   }
 
   /**
