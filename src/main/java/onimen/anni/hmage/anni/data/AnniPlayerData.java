@@ -5,28 +5,31 @@ import java.util.Map;
 
 import onimen.anni.hmage.anni.AnniKillType;
 
+/**
+ * 1キルごとに２回カウントされるため、0.5づつ加算する
+ */
 public class AnniPlayerData {
 
   private AnniTeamColor teamColor;
 
   private final String playerName;
 
-  private Map<AnniTeamColor, Integer> meleeKillCount = new EnumMap<>(AnniTeamColor.class);
+  private Map<AnniTeamColor, Double> meleeKillCount = new EnumMap<>(AnniTeamColor.class);
 
-  private Map<AnniTeamColor, Integer> bowKillCount = new EnumMap<>(AnniTeamColor.class);
+  private Map<AnniTeamColor, Double> bowKillCount = new EnumMap<>(AnniTeamColor.class);
 
   /** 近接攻撃のキル数 */
-  private int meleeCount;
+  private double meleeCount;
 
   /** 弓のキル数 */
-  private int bowCount;
+  private double bowCount;
 
-  private int nexusDamageCount;
+  private double nexusDamageCount;
 
   /** 死亡数 */
-  private int deathCount;
+  private double deathCount;
 
-  private Map<AnniTeamColor, Integer> nexusDamageMap = new EnumMap<>(AnniTeamColor.class);
+  private Map<AnniTeamColor, Double> nexusDamageMap = new EnumMap<>(AnniTeamColor.class);
 
   public AnniPlayerData(String playerName, AnniTeamColor teamColor) {
     this.playerName = playerName;
@@ -34,11 +37,11 @@ public class AnniPlayerData {
   }
 
   public int getMeleeCount() {
-    return meleeCount;
+    return (int) meleeCount;
   }
 
   public int getBowCount() {
-    return bowCount;
+    return (int) bowCount;
   }
 
   /**
@@ -48,11 +51,11 @@ public class AnniPlayerData {
    */
   public void incrementCount(AnniKillType killType, AnniTeamColor teamColor) {
     if (killType == AnniKillType.MELEE) {
-      meleeCount++;
-      meleeKillCount.compute(teamColor, (k, v) -> v == null ? 1 : v.intValue() + 1);
+      meleeCount += 0.5;
+      meleeKillCount.compute(teamColor, (k, v) -> v == null ? 0.5 : v.intValue() + 0.5);
     } else {
-      bowCount++;
-      bowKillCount.compute(teamColor, (k, v) -> v == null ? 1 : v.intValue() + 1);
+      bowCount += 0.5;
+      bowKillCount.compute(teamColor, (k, v) -> v == null ? 0.5 : v.intValue() + 0.5);
     }
   }
 
@@ -62,8 +65,8 @@ public class AnniPlayerData {
    * @param teamColor ネクサスを削ったチーム
    */
   public void nexusDamage(AnniTeamColor teamColor) {
-    nexusDamageMap.compute(teamColor, (k, v) -> v == null ? 1 : v.intValue() + 1);
-    nexusDamageCount++;
+    nexusDamageMap.compute(teamColor, (k, v) -> v == null ? 0.5 : v.intValue() + 0.5);
+    nexusDamageCount += 0.5;
   }
 
   /**
@@ -72,7 +75,7 @@ public class AnniPlayerData {
    * @return 総ネクサスダメージ
    */
   public int getNexusDamageCount() {
-    return nexusDamageCount;
+    return (int) nexusDamageCount;
   }
 
   /**
@@ -81,7 +84,7 @@ public class AnniPlayerData {
    * @return 総キル数
    */
   public int getTotalKillCount() {
-    return bowCount + meleeCount;
+    return (int) (bowCount + meleeCount);
   }
 
   public AnniTeamColor getTeamColor() {
@@ -97,10 +100,10 @@ public class AnniPlayerData {
   }
 
   public int getDeathCount() {
-    return deathCount;
+    return (int) deathCount;
   }
 
   public void incrementDeathCount() {
-    deathCount++;
+    deathCount += 0.5;
   }
 }

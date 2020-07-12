@@ -4,6 +4,7 @@
   "mainClass": "onimen.anni.hmage.LabyHmageMod",
   "description": "This is HMage Addon!! You should use it if you play Annihilation at Shotbow.net",
   "version": 1,
+  "transformerClass": "onimen.anni.hmage.transformer.HMageClassTransformer",
   "author": "Onimen & Namiken",
   "category": 3
 	}

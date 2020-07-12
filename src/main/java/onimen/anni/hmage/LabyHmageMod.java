@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 
 import net.labymod.api.LabyModAddon;
-import net.labymod.api.events.MessageReceiveEvent;
 import net.labymod.settings.elements.SettingsElement;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.Mod;
@@ -14,7 +13,6 @@ import onimen.anni.hmage.listener.ForgeEventListener;
 import onimen.anni.hmage.module.AcroJumpModule;
 import onimen.anni.hmage.module.AnniStatusModule;
 import onimen.anni.hmage.util.HMageLogger;
-import onimen.anni.hmage.util.ShotbowUtils;
 
 @Mod(modid = LabyHmageMod.MODID, name = LabyHmageMod.NAME, version = LabyHmageMod.VERSION)
 public class LabyHmageMod extends LabyModAddon {
@@ -34,17 +32,6 @@ public class LabyHmageMod extends LabyModAddon {
   @Override
   public void onEnable() {
     AnniChatReciveExecutor.startThread();
-
-    //チャットログのEvent
-    this.api.getEventManager().register(new MessageReceiveEvent() {
-      @Override
-      public boolean onReceive(String arg0, String arg1) {
-        if (ShotbowUtils.isShotbow(Minecraft.getMinecraft())) {
-          AnniChatReciveExecutor.onReceiveChat(arg1);
-        }
-        return false;
-      }
-    });
 
     //キーの設定を行う
     Minecraft.getMinecraft().gameSettings.keyBindings = ArrayUtils
