@@ -10,7 +10,9 @@ public class ShotbowUtils {
   public static final String[] SHOTBOW_IP_SUFFIXES = new String[] {
       "shotbow.net",
       "shotbow.com",
-      ".minez.net"
+      ".minez.net",
+      "205.220.225.10",
+      "205.220.231.3"
   };
 
   public static boolean isShotbow(Minecraft mc) {
